@@ -18,28 +18,70 @@ The application code and scaffolding are provided. Your job is to complete the D
 
 # Project Overview
 
-<!-- Briefly describe what this application does in your own words.
-     What problem does it solve? What does a user interact with? -->
+This application is an IT support ticket management system built on a three-tier architecture, with each tier running as its own containerized service through Docker Compose. 
+
+The first tier is the frontend, a web-based interface where users can browse existing tickets and submit new ones. The second tier is a backend API that sits between the interface and the data layer, handling all incoming requests and applying any necessary business logic. The third tier is a database that provides persistent storage for ticket data, ensuring nothing is lost if containers are restarted. 
+
+The overarching goal of the lab is to get students to understand how these three components each serve their own purposes and can be utiliozed together through Docker Compose.
 
 # Prerequisites
 
-<!-- List what needs to be installed or configured on the VM before this lab
-     will work. Include Docker, Docker Compose, and anything else required. -->
+The following required components that should be installed before running the application is: 
+
+- Docker
+- Docker Compose
+- Git
+- Linux 
 
 # Getting Started
 
-<!-- Explain how a new teammate would bring this stack up from a fresh clone.
-     Walk through every command they need to run, in order. -->
+Steps in bringing the stack from a fresh clone:
+
+1. Clone the repository by using "git clone cd inet4031-testlab12"
+
+2. Initiate the containers by using "docker compose up -d"
+
+3. Check to see that all services are running by using "docker compose ps"
+
+These three services should appear and be reported as running and "healthy"
+
+- web
+- app
+- db
+
 
 # Configuration
 
-<!-- Explain the .env file: what it is, what variables it contains,
-     and what a teammate needs to provide that is not in this repository. -->
+The purpose of the .env file is to enable configuration without users having to modify the application code. In the case that something is invalid or missing, health checks will report as failed.  
+
+The .env file contains the following variables:
+- database host
+- database username
+- database name
+- database password
+
 
 # Verification
+To confirm if the stack is functioning properly: 
 
-<!-- Describe how to confirm the stack is running correctly.
-     Reference the check script and what a passing run looks like. -->
+1. Container Status — docker compose ps
+All three containers (web, app, and db) should appear as running and healthy.
+
+2. Frontend Response — curl http://localhost:80/
+A successful response will return an HTML output, confirming the frontend is working.
+
+3. Health Check — curl http://localhost:80/health
+The expected response is {"database":"connected","status":"healthy"}, which confirms that the API is running and has successfully connected to the database.
+
+4. Retrieve Tickets — curl http://localhost:80/api/tickets
+This should return a JSON array containing the existing tickets.
+
+5. Create a Ticket — curl -X POST http://localhost:80/api/tickets -H "Content-Type: application/json" -d '{"title": "My first ticket", "description": "Testing the API"}'
+A successful response will return {"id": <id>, "message": "Ticket created successfully"}, confirming the API can accept and store new tickets.
+
+6. Automated Check — ./check.sh
+Running this script will validate all of the above conditions automatically, including service health, API functionality, and data persistence.
+
 
 # Feedback (Optional)
 
